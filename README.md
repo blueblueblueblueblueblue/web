@@ -1,2 +1,2 @@
 # web
-veu pro
+vue pro
