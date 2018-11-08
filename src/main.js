@@ -8,6 +8,9 @@ import '@/assets/iconfont.css'
 import '@/assets/styles/main.scss'
 import ElementUI from 'element-ui'
 import uploader from 'vue-simple-uploader'
+import store from './vuex'
+import './axios'
+
 Vue.use(ElementUI)
 Vue.use(uploader)
 Vue.config.productionTip = false
@@ -16,6 +19,7 @@ Vue.config.productionTip = false
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>'
 })

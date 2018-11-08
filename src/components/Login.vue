@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="AccountFrom" :model="account" :rules="rules" label-position="left" label-width="0px"
+  <el-form ref="AccountFrom" :model="account" :rules="rules" label-position="left" status-icon label-width="0px"
            class="demo-ruleForm login-container">
     <h3 class="title">管理员登录</h3>
     <el-form-item prop="username">
@@ -10,7 +10,7 @@
     </el-form-item>
     <!--<el-checkbox v-model="checked" checked class="remember">记住密码</el-checkbox>-->
     <el-form-item style="width:100%;">
-      <el-button type="primary" style="width:100%;" @click.native.prevent="handleLogin"  :loading="loading">登录</el-button>
+      <el-button type="primary" style="width:100%;"  @click="login()"  :loading="loading">登录</el-button>
     </el-form-item>
   </el-form>
 </template>
@@ -22,8 +22,8 @@
         return {
           loading: false,
           account: {
-            username: 'admin',
-            pwd: '123456'
+            username: 'lyx',
+            pwd: '616'
           },
           rules: {
             username: [
@@ -37,8 +37,50 @@
           },
           checked: true
         };
-      }
+      },
+      methods: {
+        login() {
+          this.$refs.AccountFrom.validate((valid) => {
+            if (valid) {
+              let param = new URLSearchParams();
+              param.append("username", this.account.username);
+              param.append("password", this.account.pwd);
+              this.$ajax.post('/loginCheck', param).then((res) => {
+                if (res.data) {
+                  this.$store.dispatch('login', res.data).then(() => {
+                    this.$notify({
+                      type: 'success',
+                      message: '欢迎你,' + res.data.name + '!',
+                      duration: 3000
+                    })
+                    this.$router.replace('/')
+                  })
+                } else {
+                  this.$message({
+                    type: 'error',
+                    message: '用户名或密码错误',
+                    showClose: true
+                  })
+                }
+              }).catch((err) => {
+                this.$message({
+                  type: 'error',
+                  message: '网络错误，请重试',
+                  showClose: true
+                })
+              })
+            }
 
+
+            else {
+              return false
+            }
+          })
+
+
+        }
+
+      }
     }
 </script>
 
