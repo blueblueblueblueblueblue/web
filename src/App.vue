@@ -1,12 +1,24 @@
+<style lang="stylus" rel="stylesheet/stylus">
+  .mainApp
+    position absolute
+    height 100%
+    width 100%
+</style>
+
 <template>
-  <div id="app">
+  <div id="app" class="mainApp">
     <router-view></router-view>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  data() {
+    return {
+      seller: {}
+    }
+  },
 }
 </script>
 

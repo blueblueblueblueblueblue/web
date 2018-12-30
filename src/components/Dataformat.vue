@@ -15,7 +15,7 @@
       <div class="custom-tree-container">
 
         <div class="block">
-          <p>使用 scoped slot</p>
+          <p>动态增减</p>
           <el-tree
             :data="data5"
             show-checkbox
@@ -29,13 +29,13 @@
             type="text"
             size="mini"
             @click="() => append(data)">
-            Append
+            增加
           </el-button>
           <el-button
             type="text"
             size="mini"
             @click="() => remove(node, data)">
-            Delete
+            删除
           </el-button>
         </span>
       </span>
@@ -44,7 +44,12 @@
       </div>
 
     </el-col>
-    <el-col :span="5" class="dataitembtn"></el-col>
+    <el-col :span="5" class="dataitembtn">
+      <el-row class="fd-button">
+        <el-button type="success" icon="el-icon-check" >保存</el-button>
+        <el-button type="warning" icon="el-icon-refresh">重置</el-button>
+      </el-row>
+    </el-col>
   </el-row>
 </template>
 
@@ -115,6 +120,9 @@
 </script>
 
 <style scoped>
+  .fd-button{
+    margin: 20px;
+  }
   .custom-tree-node {
     flex: 1;
     display: flex;
@@ -125,14 +133,15 @@
   }
 .dataitem{
   height: 500px;
-  border: 1px dashed #00C1DE;
+  border: 1px solid #00C1DE;
+  padding: 10px;
   margin-right: 20px;
   margin-left: 20px;
 
 }
 .dataitembtn{
   height: 500px;
-  border: 1px dashed #de6a19;
+  border: 0px dashed #de6a19;
   margin-left: 20px;
 
 }

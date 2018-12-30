@@ -10,7 +10,16 @@ import ElementUI from 'element-ui'
 import uploader from 'vue-simple-uploader'
 import store from './vuex'
 import './axios'
+import column from '@/components/column/column'
+import funnel from '@/components/funnel/funnel'
+import heat from '@/components/heat/heat'
+import point from '@/components/point/point'
+import line from '@/components/line/line'
+import dashboard from '@/components/dashboard/dashboard'
+import multipleColumn from '@/components/multipleColumn/multipleColumn'
+import {DatePicker} from 'element-ui'
 
+Vue.component(DatePicker.name, DatePicker)
 Vue.use(ElementUI)
 Vue.use(uploader)
 Vue.config.productionTip = false

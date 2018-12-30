@@ -50,7 +50,7 @@
           currentDate: new Date(),
           options: {
             // https://github.com/simple-uploader/Uploader/tree/develop/samples/Node.js
-            target: '//localhost:3000/upload',
+            target: '//localhost:8081/vueupload',
             testChunks: false
           },
           attrs: {

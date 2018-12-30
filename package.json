@@ -10,17 +10,24 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "babel-runtime": "^6.9.0",
     "css-loader": "^0.28.11",
+    "echarts": "^3.3.2",
     "element-ui": "^2.4.9",
+    "modernizr": "^3.3.1",
     "node-sass": "^4.9.4",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
+    "stylus": "^0.54.5",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",
     "vue-simple-uploader": "^0.5.4",
-    "vue-style-loader": "^3.1.2"
+    "vue-style-loader": "^3.1.2",
+    "vue-tables-2": "^0.2.77",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
+    "stylus-loader": "^2.1.1",
     "autoprefixer": "^7.1.2",
     "babel-core": "^6.22.1",
     "babel-helper-vue-jsx-merge-props": "^2.0.3",

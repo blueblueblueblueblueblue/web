@@ -46,11 +46,12 @@
               param.append("username", this.account.username);
               param.append("password", this.account.pwd);
               this.$ajax.post('/loginCheck', param).then((res) => {
-                if (res.data) {
-                  this.$store.dispatch('login', res.data).then(() => {
+                console.log("resstatus"+res.data.status);
+                if (res.data.status) {
+                  this.$store.dispatch('login', res.data.username).then(() => {
                     this.$notify({
                       type: 'success',
-                      message: '欢迎你,' + res.data.name + '!',
+                      message: '欢迎你,' + res.data.username + '!',
                       duration: 3000
                     })
                     this.$router.replace('/')

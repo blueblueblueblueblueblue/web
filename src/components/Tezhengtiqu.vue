@@ -1,55 +1,85 @@
 <template>
  <el-row>
   <el-col :span="24" class="warp-breadcrum">
-    <el-breadcrumb separator="/" style="font-size: 20px">
-      <el-breadcrumb-item :to="{ path: '/' }"><b>首页</b></el-breadcrumb-item>
+    <!--<el-breadcrumb separator="/" style="font-size: 20px">-->
+      <!--<el-breadcrumb-item :to="{ path: '/' }"><b>首页</b></el-breadcrumb-item>-->
 
-      <el-breadcrumb-item>特征值提取</el-breadcrumb-item>
-    </el-breadcrumb>
+      <!--<el-breadcrumb-item>特征值提取</el-breadcrumb-item>-->
+    <!--</el-breadcrumb>-->
   </el-col>
-   <el-col :span="24">
-     <p style="text-align: center; margin: 0 0 20px">使用 render-content 自定义数据项</p>
-     <div style="text-align: center">
-       <el-transfer
-         style="text-align: left; display: inline-block"
-         v-model="value3"
-         filterable
-         :left-default-checked="[2, 3]"
-         :right-default-checked="[1]"
-         :render-content="renderFunc"
-         :titles="['Source', 'Target']"
-         :button-texts="['到左边', '到右边']"
-         :format="{
-        noChecked: '${total}',
-        hasChecked: '${checked}/${total}'
-      }"
-         @change="handleChange"
-         :data="data">
-         <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button>
-         <el-button class="transfer-footer" slot="right-footer" size="small">操作</el-button>
-       </el-transfer>
-     </div>
-     <p style="text-align: center; margin: 50px 0 20px">使用 scoped-slot 自定义数据项</p>
-     <div style="text-align: center">
-       <el-transfer
-         style="text-align: left; display: inline-block"
-         v-model="value4"
-         filterable
-         :left-default-checked="[2, 3]"
-         :right-default-checked="[1]"
-         :titles="['Source', 'Target']"
-         :button-texts="['到左边', '到右边']"
-         :format="{
-        noChecked: '${total}',
-        hasChecked: '${checked}/${total}'
-      }"
-         @change="handleChange"
-         :data="data">
-         <span slot-scope="{ option }">{{ option.key }} - {{ option.label }}</span>
-         <el-button class="transfer-footer" slot="left-footer" size="small">操作</el-button>
-         <el-button class="transfer-footer" slot="right-footer" size="small">操作</el-button>
-       </el-transfer>
-     </div>
+   <el-col :span="10">
+     <el-table
+       highlight-current-row
+
+       :data="tableData"
+       style="width: 100%">
+       <el-table-column
+         label="数据表项"
+         width="180">
+         <template slot-scope="scope">
+           <i class="el-icon-time"></i>
+           <span style="margin-left: 10px">{{ scope.row.data }}</span>
+         </template>
+       </el-table-column>
+
+       <el-table-column
+         width="180"
+         label="操作">
+         <template slot-scope="scope">
+           <el-button
+             type=""
+             size="mini"
+             @click="handleAdd(scope.$index, scope.row)">运算></el-button>
+
+         </template>
+       </el-table-column>
+     </el-table>
+
+   </el-col>
+   <el-col :span="3">
+     <br>
+     <br>
+     <el-button type="primary" icon="el-icon-plus" circle @click="plus()"></el-button><br><br>
+     <el-button type="success" icon="el-icon-minus" circle @click="minus()"></el-button><br><br>
+     <el-button type="info" icon="el-icon-close" circle @click="multi()"></el-button><br><br>
+     <el-button type="danger"  circle @click="divid()"> &nbsp;/&nbsp; </el-button>
+
+   </el-col>
+   <el-col :span="10">
+     <el-table
+       highlight-current-row
+
+       :data="tableData2"
+       style="width: 100%">
+       <el-table-column
+         label="数据表达式"
+         width="180">
+         <template slot-scope="scope">
+           <i class="el-icon-time"></i>
+           <span style="margin-left: 10px">{{ scope.row.data }}</span>
+         </template>
+       </el-table-column>
+
+       <el-table-column
+         width="180"
+         label="操作">
+         <template slot-scope="scope">
+           <el-button
+
+             size="mini"
+             @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+           <el-button
+
+             size="mini"
+             type="danger"
+             @click="handleDelete()">删除</el-button>
+         </template>
+       </el-table-column>
+     </el-table>
+     <el-row style="margin-top: 10px">
+       <el-button @click="newExpre()">新建表达式</el-button>
+     </el-row>
+
    </el-col>
  </el-row>
 </template>
@@ -58,31 +88,61 @@
     export default {
         name: "tezhengtiqu",
       data() {
-        const generateData = _ => {
-          const data = [];
-          for (let i = 1; i <= 15; i++) {
-            data.push({
-              key: i,
-              label: `备选项 ${ i }`,
-              disabled: i % 4 === 0
-            });
-          }
-          return data;
-        };
-        return {
-          data: generateData(),
-          value3: [1],
-          value4: [1],
-          renderFunc(h, option) {
-            return <span>{ option.key } - { option.label }</span>;
-          }
-        };
+           return{
+             curdata:'',
+             tableData: [{
+               data: '表项1',
+
+             }, {
+               data: '表项2',
+
+             }, {
+               data: '表项3',
+
+             }, {
+               data: '表项4',
+
+             }],
+             tableData2:[{
+               data:'表项1+表项2',
+
+             }]
+           }
       },
 
       methods: {
-        handleChange(value, direction, movedKeys) {
-          console.log(value, direction, movedKeys);
+        handleEdit(index, row) {
+          //console.log(row.data);
+          this.curdata = index;
+          console.log(this.curdata);
+          this.tableData2[index].data = '';
+
+        },
+        handleAdd(index, row) {
+          //console.log(row.data);
+          this.tableData2[this.curdata].data += row.data;
+          console.log(row.data);
+
+        },
+        handleDelete() {
+          this.tableData2.pop();
+        },
+        newExpre(){
+          this.tableData2.push({data:''});
+        },
+        plus(){
+          this.tableData2[this.curdata].data+='+';
+        },
+        minus(){
+          this.tableData2[this.curdata].data+='-';
+        },
+        multi(){
+          this.tableData2[this.curdata].data+='*';
+        },
+        divid(){
+          this.tableData2[this.curdata].data+='/';
         }
+
       }
     }
 </script>

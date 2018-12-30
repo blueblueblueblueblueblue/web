@@ -47,23 +47,39 @@
                 <i :class="term.iconCls"></i><span slot="title">{{term.name}}</span>
               </el-menu-item>
             </el-submenu>
-            <el-menu-item v-else-if="item.leaf&&item.children&&item.children.length" :index="item.children[0].path"
+            <el-menu-item  v-else-if="item.leaf&&item.children&&item.children.length" :index="item.children[0].path"
                           :class="$route.path==item.children[0].path?'is-active':''">
               <i :class="item.iconCls"></i><span slot="title">{{item.children[0].name}}</span>
             </el-menu-item>
           </template>
+          <el-menu-item  @click="addMenuItem">
+            <i class="el-icon-plus"></i><span >添加插件</span>
+          </el-menu-item>
         </el-menu>
       </aside>
+
+      <el-dialog title="添加插件" :visible.sync="dialogFormVisible">
+        <el-form :model="form">
+          <el-form-item label="插件名称" :label-width="formLabelWidth">
+            <el-input v-model="form.name" autocomplete="off" style="width:50%"></el-input>
+          </el-form-item>
+          <el-form-item label="插件类型" :label-width="formLabelWidth" >
+            <el-select v-model="form.region" placeholder="请选择插件类型" style="width:50%">
+              <el-option label="故障诊断" value="1"></el-option>
+
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="confirm">确 定</el-button>
+        </div>
+      </el-dialog>
 
       <!--右侧内容区-->
       <section class="content-container">
         <div class="grid-content bg-purple-light">
           <el-col :span="24" class="content-wrapper">
-            <el-steps :active="1" simple>
-              <el-step title="步骤 1" icon="el-icon-edit"></el-step>
-              <el-step title="步骤 2" icon="el-icon-upload"></el-step>
-              <el-step title="步骤 3" icon="el-icon-picture"></el-step>
-            </el-steps>
             <transition name="fade" mode="out-in">
               <router-view></router-view>
             </transition>
@@ -76,8 +92,16 @@
 </template>
 
 <script>
- 
 
+  import Tezhengtiqu from '@/components/Tezhengtiqu'
+  import Modelmanager from '@/components/plugin/Modelmanager'
+  import Modelconfig from '@/components/plugin/Modelconfig'
+  import Syslog from '@/components/plugin/Syslog'
+  import Sysmanager from '@/components/plugin/Sysmanager'
+  import Home from '@/components/Home'
+  import Datapool from '@/components/Datapool'
+  import Plugin from '@/components/Plugin'
+  import dashboard from '@/components/dashboard/dashboard'
   export default {
     name: 'home',
     created(){
@@ -94,12 +118,60 @@
     },
     data () {
       return {
+        options:[{value:1,lable:"装备系统"}],
+        dialogFormVisible:false,
         defaultActiveIndex: "0",
         nickname: '',
         collapsed: false,
+        form: {
+          name: '',
+          region: '',
+        },
+        formLabelWidth: '120px'
       }
     },
     methods: {
+      confirm(){
+         var _this = this;
+
+        let r = this.$router.options.routes;
+        console.log(r);
+        r.push({
+          path: '/',
+          name: 'chajian',
+          component: Home,
+
+          leaf: true, // 只有一个节点
+          menuShow: true,
+          iconCls: 'el-icon-setting', // 图标样式class
+          children: [
+            { path: '/plugin',
+              component: Plugin,
+              name: _this.form.name,
+              menuShow: true,
+              redirect:'/plugin/tezheng',
+              children: [
+                {path: '/plugin/xitongguanli', component: Sysmanager, name: '系统管理', menuShow: true},
+                {path: '/plugin/xitongrizhi', component: Syslog, name: '系统日志', menuShow: true},
+                {path: '/plugin/moxingpeizhi', component: Modelconfig, name: '模型配置', menuShow: true},
+                {path: '/plugin/moxingguanli', component: Modelmanager, name: '模型管理', menuShow: true},
+                {path: '/plugin/tezheng', component: Tezhengtiqu, name: '特征提取', menuShow: true},
+                {path: '/plugin/dashboard', component: dashboard, name: '数据可视化', menuShow: true}
+              ]
+            }
+          ]
+        });
+        console.log(r);
+        this.$router.addRoutes(r);
+
+        this.dialogFormVisible = false;
+      },
+      addMenuItem(){
+        this.dialogFormVisible = true;
+
+
+
+      },
       handleSelect(index){
         this.defaultActiveIndex = index;
       },
