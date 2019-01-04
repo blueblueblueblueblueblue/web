@@ -19,7 +19,7 @@ import line from '@/components/line/line'
 import dashboard from '@/components/dashboard/dashboard'
 import multipleColumn from '@/components/multipleColumn/multipleColumn'
 import {DatePicker} from 'element-ui'
-
+import DataVisible from '@/components/DataVisible'
 Vue.component(DatePicker.name, DatePicker)
 
 Vue.use(Router)
@@ -100,7 +100,7 @@ let router = new Router({
             {path: '/plugin/moxingpeizhi', component: Modelconfig, name: '模型配置', menuShow: true},
             {path: '/plugin/moxingguanli', component: Modelmanager, name: '模型管理', menuShow: true},
             {path: '/plugin/tezheng', component: Tezhengtiqu, name: '特征提取', menuShow: true},
-            {path: '/plugin/dashboard', component: dashboard, name: '数据可视化', menuShow: true}
+            {path: '/plugin/dashboard', component: DataVisible, name: '数据可视化', menuShow: true}
           ]
         }
       ]

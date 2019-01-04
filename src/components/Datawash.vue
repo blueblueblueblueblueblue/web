@@ -20,7 +20,7 @@
       <el-col :span="18" id="main" style="height:500px"></el-col>
       <el-col :span="6" >
         <el-button type="primary" @click="getWash">数据格式化</el-button>
-        <el-button type="success">处理</el-button>
+        <el-button type="success" @click="doWash()">处理</el-button>
       </el-col>
     </el-row>
   </el-row>
@@ -40,6 +40,33 @@
           }
       },
       methods:{
+        doWash(){
+          var _this = this;
+          let param = new URLSearchParams();
+          param.append("dataid",sessionStorage.getItem("dataid"));
+          this.$ajax.post('/doWash',param).then((res) => {
+            console.log("resstatus"+res.data.status);
+            if (res.data.status) {
+              this.$message({
+                type: 'success',
+                message: '成功',
+                showClose: true
+              })
+            } else {
+              this.$message({
+                type: 'error',
+                message: '获取失败',
+                showClose: true
+              })
+            }
+          }).catch((err) => {
+            this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+            })
+          })
+        },
         handleEdit(index, row) {
           console.log(index, row);
         },
