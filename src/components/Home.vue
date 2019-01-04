@@ -15,13 +15,7 @@
         <el-dropdown trigger="click">
           <span class="el-dropdown-link userinfo-inner"><i class="iconfont icon-user"></i> {{nickname}}  <i
             class="iconfont icon-down"></i></span>
-          <el-dropdown-menu v-if="user" slot="dropdown">
-            <el-dropdown-item>
-              <div @click="jumpTo('/user/profile')"><span style="color: #555;font-size: 14px;">个人信息</span></div>
-            </el-dropdown-item>
-            <el-dropdown-item>
-              <div @click="jumpTo('/user/changepwd')"><span style="color: #555;font-size: 14px;">修改密码</span></div>
-            </el-dropdown-item>
+          <el-dropdown-menu v-if="" slot="dropdown">
             <el-dropdown-item divided @click.native="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -52,6 +46,9 @@
               <i :class="item.iconCls"></i><span slot="title">{{item.children[0].name}}</span>
             </el-menu-item>
           </template>
+          <el-menu-item v-for="(item,index) in pluginList" :index="index" :key="item.id" @click="chosePlugin(item)" >
+            <i class="el-icon-setting"></i><span >{{item.pluginName}}</span>
+          </el-menu-item>
           <el-menu-item  @click="addMenuItem">
             <i class="el-icon-plus"></i><span >添加插件</span>
           </el-menu-item>
@@ -105,72 +102,53 @@
   export default {
     name: 'home',
     created(){
-      bus.$on('setNickName', (text) => {
-        this.nickname = text;
-      })
 
-      bus.$on('goto', (url) => {
-        if (url === "/login") {
-          localStorage.removeItem('access-user');
-        }
-        this.$router.push(url);
-      })
     },
     data () {
       return {
         options:[{value:1,lable:"装备系统"}],
         dialogFormVisible:false,
         defaultActiveIndex: "0",
-        nickname: '',
+        nickname:this.$store.state.user,
         collapsed: false,
         form: {
           name: '',
           region: '',
         },
-        formLabelWidth: '120px'
+        formLabelWidth: '120px',
+        pluginList:"",
       }
     },
     methods: {
+      chosePlugin(item){
+        console.log(item);
+        this.$router.push("/plugin")
+      },
       confirm(){
-         var _this = this;
-
-        let r = this.$router.options.routes;
-        console.log(r);
-        r.push({
-          path: '/',
-          name: 'chajian',
-          component: Home,
-
-          leaf: true, // 只有一个节点
-          menuShow: true,
-          iconCls: 'el-icon-setting', // 图标样式class
-          children: [
-            { path: '/plugin',
-              component: Plugin,
-              name: _this.form.name,
-              menuShow: true,
-              redirect:'/plugin/tezheng',
-              children: [
-                {path: '/plugin/xitongguanli', component: Sysmanager, name: '系统管理', menuShow: true},
-                {path: '/plugin/xitongrizhi', component: Syslog, name: '系统日志', menuShow: true},
-                {path: '/plugin/moxingpeizhi', component: Modelconfig, name: '模型配置', menuShow: true},
-                {path: '/plugin/moxingguanli', component: Modelmanager, name: '模型管理', menuShow: true},
-                {path: '/plugin/tezheng', component: Tezhengtiqu, name: '特征提取', menuShow: true},
-                {path: '/plugin/dashboard', component: dashboard, name: '数据可视化', menuShow: true}
-              ]
-            }
-          ]
-        });
-        console.log(r);
-        this.$router.addRoutes(r);
-
         this.dialogFormVisible = false;
+        let param = new URLSearchParams();
+        param.append("name",this.form.name);
+        this.$ajax.post('/addPlugin',param).then((res) => {
+          console.log("resstatus"+res.data.status);
+          if (res.data.status) {
+           this.getPlugin();
+          } else {
+            this.$message({
+              type: 'error',
+              message: '获取失败',
+              showClose: true
+            })
+          }
+        }).catch((err) => {
+          this.$message({
+            type: 'error',
+            message: '网络错误，请重试',
+            showClose: true
+          })
+        })
       },
       addMenuItem(){
         this.dialogFormVisible = true;
-
-
-
       },
       handleSelect(index){
         this.defaultActiveIndex = index;
@@ -189,28 +167,77 @@
           confirmButtonClass: 'el-button--warning'
         }).then(() => {
           //确认
-          that.loading = true;
-          API.logout().then(function (result) {
-            that.loading = false;
-            localStorage.removeItem('access-user');
-            that.$router.go('/login'); //用go刷新
-          }, function (err) {
-            that.loading = false;
-            that.$message.error({showClose: true, message: err.toString(), duration: 2000});
-          }).catch(function (error) {
-            that.loading = false;
-            console.log(error);
-            that.$message.error({showClose: true, message: '请求出现异常', duration: 2000});
-          });
+          this.$store.dispatch('logout').then( () =>{
+            this.$router.push("/");
+          })
+
         }).catch(() => {});
+      },
+      showPlugin(){
+        var num = this.pluginList.length;
+        console.log("num: "+num);
+        console.log("plugin"+this.pluginList[num]);
+        let r = this.$router.options.routes;
+        for (var i = 0;i<num;i++){
+          console.log("plugin"+this.pluginList[i]);
+          r.push({
+            path: '/',
+            name: 'chajian',
+            component: Home,
+            leaf: true, // 只有一个节点
+            menuShow: true,
+            iconCls: 'el-icon-setting', // 图标样式class
+            children: [
+              { path: '/plugin',
+                component: Plugin,
+                name: this.pluginList[i].pluginName,
+                menuShow: true,
+                redirect:'/plugin/tezheng',
+                children: [
+                  {path: '/plugin/xitongguanli', component: Sysmanager, name: '系统管理', menuShow: true},
+                  {path: '/plugin/xitongrizhi', component: Syslog, name: '系统日志', menuShow: true},
+                  {path: '/plugin/moxingpeizhi', component: Modelconfig, name: '模型配置', menuShow: true},
+                  {path: '/plugin/moxingguanli', component: Modelmanager, name: '模型管理', menuShow: true},
+                  {path: '/plugin/tezheng', component: Tezhengtiqu, name: '特征提取', menuShow: true},
+                  {path: '/plugin/dashboard', component: dashboard, name: '数据可视化', menuShow: true}
+                ]
+              }
+            ]
+          });
+        }
+        this.$router.addRoutes(r);
+      },
+      getPlugin(){
+        var _this = this;
+        this.$ajax.post('/pluginList').then((res) => {
+          console.log("resstatus"+res.data.status);
+          if (res.data.status) {
+            _this.pluginList = res.data.pluginList;
+          } else {
+            this.$message({
+              type: 'error',
+              message: '获取失败',
+              showClose: true
+            })
+          }
+        }).catch((err) => {
+          this.$message({
+            type: 'error',
+            message: '网络错误，请重试',
+            showClose: true
+          })
+        })
       }
     },
+    created(){
+      this.getPlugin();
+    },
     mounted() {
-      let user = localStorage.getItem('access-user');
-      if (user) {
-        user = JSON.parse(user);
-        this.nickname = user.nickname || '';
-      }
+
+
+    },
+    destroyed(){
+
     }
   }
 </script>

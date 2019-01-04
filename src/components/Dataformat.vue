@@ -22,23 +22,11 @@
             node-key="id"
             default-expand-all
             :expand-on-click-node="false">
-      <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>{{ node.label }}</span>
-        <span>
-          <el-button
-            type="text"
-            size="mini"
-            @click="() => append(data)">
-            增加
-          </el-button>
-          <el-button
-            type="text"
-            size="mini"
-            @click="() => remove(node, data)">
-            删除
-          </el-button>
-        </span>
-      </span>
+      <div class="custom-tree-node " slot-scope="{ node, data }">
+
+          <span>{{ node.label }}:</span>
+          <input v-model="dataformat[data.id]" v-if="!data.children"/>
+      </div>
           </el-tree>
         </div>
       </div>
@@ -46,7 +34,7 @@
     </el-col>
     <el-col :span="5" class="dataitembtn">
       <el-row class="fd-button">
-        <el-button type="success" icon="el-icon-check" >保存</el-button>
+        <el-button type="success" icon="el-icon-check" @click="savaFormat()" >保存</el-button>
         <el-button type="warning" icon="el-icon-refresh">重置</el-button>
       </el-row>
     </el-col>
@@ -58,47 +46,30 @@
     export default {
         name: "Dataformat",
       data() {
-        const data = [{
-          id: 1,
-          label: '一级 1',
-          children: [{
-            id: 4,
-            label: '二级 1-1',
-            children: [{
-              id: 9,
-              label: '三级 1-1-1'
-            }, {
-              id: 10,
-              label: '三级 1-1-2'
-            }]
-          }]
-        }, {
-          id: 2,
-          label: '一级 2',
-          children: [{
-            id: 5,
-            label: '二级 2-1'
-          }, {
-            id: 6,
-            label: '二级 2-2'
-          }]
-        }, {
-          id: 3,
-          label: '一级 3',
-          children: [{
-            id: 7,
-            label: '二级 3-1'
-          }, {
-            id: 8,
-            label: '二级 3-2'
-          }]
-        }];
         return {
-          data5: JSON.parse(JSON.stringify(data))
+          data5: [],
+          headNum:"",
+          dataformat:[],
         }
       },
 
       methods: {
+        savaFormat(){
+          var format={};
+          format["rows"]=this.headNum;
+          var arr =[];
+          for (var i =0;i<this.headNum;i++){
+                  arr.push({
+                    "name":this.dataformat[4*i+2],
+                    "type":this.dataformat[4*i+3],
+                    "default":this.dataformat[4*i+4]
+                  })
+          }
+          format["format"]=arr;
+          this.saveFormat(JSON.stringify(format));
+          console.log(format);
+          console.log(format.length);
+        },
         append(data) {
           const newChild = { id: id++, label: 'testtest', children: [] };
           if (!data.children) {
@@ -113,8 +84,102 @@
           const index = children.findIndex(d => d.id === data.id);
           children.splice(index, 1);
         },
+        getData(){
+          let param = new URLSearchParams();
+          param.append("dataid", this.dataItem);
+          this.$ajax.post('/dataFormat').then((res) => {
+            console.log("resstatus"+res.data.status);
+            if (res.data.status) {
+              this.dataformat = res.data.dataFormat;
+              console.log(this.dataformat);
+            } else {
+              this.$message({
+                type: 'error',
+                message: '获取失败',
+                showClose: true
+              })
+            }
+          }).catch((err) => {
+            this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+            })
+          })
+        },
+        getHeadNum(){
+          var dataitem = sessionStorage.getItem("dataid");
+          let param = new URLSearchParams();
+          param.append("dataid", dataitem);
+          this.$ajax.post('/getHeadNum',param).then((res) => {
+            console.log("resstatus"+res.data.status);
+            if (res.data.status) {
+              this.headNum = res.data.headNum;
+              for (var i = 0; i < this.headNum; i++) {
+                this.dataformat[i*4+1]="dasp";
+                this.data5.push({
+                  id: 4*i+1,
+                  label: '数据表项'+(i+1),
+                  top:'1',
+                  children: [{
+                    id:  4*i+2,
+                    label: '数据名称',
+                  },
+                    {
+                      id:  4*i+3,
+                      label: '数据类型',
+                    },
+                    {
+                      id:  4*i+4,
+                      label: '默认值',
+                    }]
+                });
+              }
+              console.log(this.headNum);
+              console.log(this.data5);
+            } else {
+              this.$message({
+                type: 'error',
+                message: '获取失败',
+                showClose: true
+              })
+            }
+          }).catch((err) => {
+            this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+            })
+          })
+        },
+        saveFormat(str){
+          var dataitem = sessionStorage.getItem("dataid");
+          let param = new URLSearchParams();
+          param.append("dataid", dataitem);
+          param.append("formatJson",str);
+          this.$ajax.post('/saveFormat',param).then((res) => {
+            console.log("resstatus"+res.data.status);
+            if (res.data.status) {
 
+            } else {
+              this.$message({
+                type: 'error',
+                message: '获取失败',
+                showClose: true
+              })
+            }
+          }).catch((err) => {
+            this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+            })
+          })
+        }
 
+      },
+      mounted(){
+          this.getHeadNum();
       }
     }
 </script>
@@ -132,7 +197,8 @@
     padding-right: 8px;
   }
 .dataitem{
-  height: 500px;
+  min-height: 500px;
+  height: auto;
   border: 1px solid #00C1DE;
   padding: 10px;
   margin-right: 20px;
@@ -145,4 +211,7 @@
   margin-left: 20px;
 
 }
+  .fd-format{
+    height: 100px;
+  }
 </style>

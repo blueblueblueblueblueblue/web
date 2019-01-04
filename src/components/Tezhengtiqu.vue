@@ -18,7 +18,7 @@
          width="180">
          <template slot-scope="scope">
            <i class="el-icon-time"></i>
-           <span style="margin-left: 10px">{{ scope.row.data }}</span>
+           <span style="margin-left: 10px">{{ scope.row.name }}</span>
          </template>
        </el-table-column>
 
@@ -89,6 +89,7 @@
         name: "tezhengtiqu",
       data() {
            return{
+             jsondata:"",
              curdata:'',
              tableData: [{
                data: '表项1',
@@ -120,7 +121,7 @@
         },
         handleAdd(index, row) {
           //console.log(row.data);
-          this.tableData2[this.curdata].data += row.data;
+          this.tableData2[this.curdata].data += row.name;
           console.log(row.data);
 
         },
@@ -141,8 +142,33 @@
         },
         divid(){
           this.tableData2[this.curdata].data+='/';
+        },
+        getTe(){
+          let param = new URLSearchParams();
+          param.append("dataid", sessionStorage.getItem("dataid"));
+          this.$ajax.post('/getTe', param).then((res) => {
+            console.log("resstatus"+res.data.status);
+            if (res.data.status) {
+                this.tableData = res.data.dataTe.format;
+            } else {
+              this.$message({
+                type: 'error',
+                message: '用户名或密码错误',
+                showClose: true
+              })
+            }
+          }).catch((err) => {
+            this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+            })
+          })
         }
 
+      },
+      mounted(){
+          this.getTe();
       }
     }
 </script>

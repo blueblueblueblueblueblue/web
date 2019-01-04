@@ -10,13 +10,13 @@
 
    <el-col :span="24" class="datapool">
      <el-row>
-       <el-col :span="3" v-for="(o, index) in 2" :key="o" :offset="index > 0 ? 2 : 0" >
-         <el-card :body-style="{ padding: '0px' }" @click="chose">
-           <img src="../assets/images/data.png" class="image">
-           <div style="padding: 10px;">
+       <el-col :span="3" v-for="(item, index) in datalist" :key="item.id" style="margin: 20px" >
+         <el-card :body-style="{ padding: '0px', }" :style=" choseIndex==index?'border: #00C1DE 2px solid':'border: #ffffff 2px solid'">
+           <img src="../assets/images/data.png" class="image" @click="chose(index)">
+           <div style="padding: 10px;cursor: pointer" @click="chose(index)">
              <div class="bottom clearfix">
-               <span>数据{{index+1}}</span>
-               <el-checkbox class="chose" size="medium"  ></el-checkbox>
+               <span>{{item.nameByUser}}</span>
+
              </div>
            </div>
          </el-card>
@@ -24,7 +24,7 @@
      </el-row>
    </el-col>
    <el-col :span="24">
-     <uploader :options="options" class="uploader-example">
+     <uploader :options="options" :file-status-text="fileStatusText" @file-success="dataList()" class="uploader-example">
        <uploader-unsupport></uploader-unsupport>
 
        <uploader-drop class="drop-area">
@@ -47,22 +47,59 @@
       name: "Datapool",
       data () {
         return {
+          choseIndex:-1,
+          datalist:"",
           currentDate: new Date(),
           options: {
             // https://github.com/simple-uploader/Uploader/tree/develop/samples/Node.js
             target: '//localhost:8081/vueupload',
-            testChunks: false
+            testChunks: false,
+
+          },
+          fileStatusText:{
+            success: '成功',
+            error: 'e出错',
+            uploading: '正在上传',
+            paused: '暂停',
+            waiting: '等待'
           },
           attrs: {
-            accept: 'image/*'
+            accept: ''
           }
         }
       },
+      mounted(){
+        this.dataList();
+      },
       methods:{
-        chose(){
-           //todo
+        chose(index){
+          this.choseIndex = index;
+          sessionStorage.setItem("dataid",this.datalist[index].id);
+        },
+        dataList(){
+          this.$ajax.post('/dataList').then((res) => {
+            console.log("resstatus"+res.data.status);
+            if (res.data.status) {
+               this.datalist = res.data.datalist;
+               console.log(this.datalist);
+            } else {
+              this.$message({
+                type: 'error',
+                message: '获取失败',
+                showClose: true
+              })
+            }
+          }).catch((err) => {
+            this.$message({
+              type: 'error',
+              message: '网络错误，请重试',
+              showClose: true
+            })
+          })
         }
-      }
+      },
+
+
     }
 </script>
 
@@ -70,7 +107,7 @@
 .datapool{
   width: 98%;
   margin: 10px;
-  padding: 10px;
+  padding: 0px;
   height: auto;
   border: 1px dashed #00C1DE;
 
@@ -118,6 +155,7 @@
 
 }
 .image {
+  cursor: pointer;
   width: 100%;
   display: block;
 }

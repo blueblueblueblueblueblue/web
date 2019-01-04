@@ -28,7 +28,7 @@ let router = new Router({
 // mode: 'history',
   routes: [
     {
-      path:'/login',
+      path:'/',
       name:'login',
       component:Login,
     },
@@ -80,7 +80,31 @@ let router = new Router({
     //     {path: '/tezhengtiqu', component: Tezhengtiqu, name: '特征提取', menuShow: true}
     //   ]
     // },
+    {
+      path: '/',
+      name: 'chajian',
+      component: Home,
 
+      leaf: true, // 只有一个节点
+      menuShow: false,
+      iconCls: 'el-icon-setting', // 图标样式class
+      children: [
+        { path: '/plugin/',
+          component: Plugin,
+          name: "插件",
+          menuShow: true,
+          redirect:'/plugin/tezheng',
+          children: [
+            {path: '/plugin/xitongguanli', component: Sysmanager, name: '系统管理', menuShow: true},
+            {path: '/plugin/xitongrizhi', component: Syslog, name: '系统日志', menuShow: true},
+            {path: '/plugin/moxingpeizhi', component: Modelconfig, name: '模型配置', menuShow: true},
+            {path: '/plugin/moxingguanli', component: Modelmanager, name: '模型管理', menuShow: true},
+            {path: '/plugin/tezheng', component: Tezhengtiqu, name: '特征提取', menuShow: true},
+            {path: '/plugin/dashboard', component: dashboard, name: '数据可视化', menuShow: true}
+          ]
+        }
+      ]
+    },
     {
       path: '/column',
       component: column

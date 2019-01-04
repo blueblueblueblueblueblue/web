@@ -11,80 +11,24 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-table
-        :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()))"
-        style="width: 100%">
-        <el-table-column
-          label="索引"
-          prop="index">
-        </el-table-column>
-        <el-table-column
-          label="数据表项"
-          prop="name">
-        </el-table-column>
-        <el-table-column
-          prop="tag"
-          label="表项状态"
-
-          :filters="[{ text: '正常值', value: '正常值' }, { text: '异常值', value: '异常值' }]"
-          :filter-method="filterTag"
-          filter-placement="bottom-end">
-          <template slot-scope="scope">
-            <el-tag
-              :type="scope.row.tag === '正常值' ? 'primary' : 'success'"
-              disable-transitions>{{scope.row.tag}}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column
-          align="right">
-          <template slot="header" slot-scope="scope">
-            <el-input
-              v-model="search"
-              size="mini"
-              placeholder="输入关键字搜索"/>
-          </template>
-          <template slot-scope="scope">
-            <el-button
-              size="mini"
-              @click="handleEdit(scope.$index, scope.row)">操作</el-button>
-            <el-button
-              size="mini"
-              type="danger"
-              @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <el-col :span="18" id="main" style="height:500px"></el-col>
+      <el-col :span="6" >
+        <el-button type="primary">处理</el-button>
+      </el-col>
     </el-row>
   </el-row>
 </template>
 
 <script>
+  import echarts from 'echarts'
     export default {
         name: "Datawash",
       data(){
           return{
-            tableData: [{
-              index: '1',
-              name: '表项1',
-              address: '上海市普陀区金沙江路 1518 弄',
-              tag:'脏数据'
-            }, {
-              index: '2',
-              name: '表项1',
-              address: '上海市普陀区金沙江路 1517 弄',
-              tag:'脏数据'
-            }, {
-              index: '3',
-              name: '表项1',
-              address: '上海市普陀区金沙江路 1519 弄',
-              tag:'正常值'
-            }, {
-              index: '4',
-              name: '表项1',
-              address: '上海市普陀区金沙江路 1516 弄',
-              tag:'正常值'
-            }],
-            search: ''
+            search: '',
+            errData:[],
+            corData:[],
+            xAxisData:[],
           }
       },
       methods:{
@@ -93,9 +37,118 @@
         },
         handleDelete(index, row) {
           console.log(index, row);
+        },
+        getWash(){
+          for (var i = 0; i < 10; i++) {
+            this.xAxisData.push('Class' + i);
+            this.errData.push((Math.random() * 2).toFixed(2));
+            this.corData.push((Math.random() + 0.3).toFixed(2));
+
+          }
+        },
+        showCharts(){
+          var myChart = echarts.init(document.getElementById('main'));
+          var xAxisData = this.xAxisData;
+          var data1 = this.errData;
+          var data2 = this.corData;
+          var itemStyle = {
+            normal: {
+            },
+            emphasis: {
+              barBorderWidth: 1,
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowOffsetY: 0,
+              shadowColor: 'rgba(0,0,0,0.5)'
+            }
+          };
+
+          var option = {
+            backgroundColor: '#ffffff',
+            legend: {
+              data: ['错误数据', '正确数据'],
+              align: 'left',
+              left: 10
+            },
+            brush: {
+              toolbox: ['rect', 'polygon', 'lineX', 'lineY', 'keep', 'clear'],
+              xAxisIndex: 0
+            },
+            toolbox: {
+              feature: {
+                magicType: {
+                  type: ['stack', 'tiled']
+                },
+                dataView: {}
+              }
+            },
+            tooltip: {},
+            xAxis: {
+              data: xAxisData,
+              name: 'X Axis',
+              silent: false,
+              axisLine: {onZero: true},
+              splitLine: {show: false},
+              splitArea: {show: false}
+            },
+            yAxis: {
+              inverse: true,
+              splitArea: {show: false}
+            },
+            grid: {
+              left: 100
+            },
+            visualMap: {
+              type: 'continuous',
+              dimension: 1,
+              text: ['High', 'Low'],
+              inverse: true,
+              itemHeight: 200,
+              calculable: true,
+              min: -2,
+              max: 6,
+              top: 60,
+              left: 10,
+              inRange: {
+                colorLightness: [0.4, 0.8]
+              },
+              outOfRange: {
+                color: '#bbb'
+              },
+              controller: {
+                inRange: {
+                  color: '#2f4554'
+                }
+              }
+            },
+            series: [
+              {
+                name: '错误数据',
+                type: 'bar',
+                stack: 'one',
+                itemStyle: itemStyle,
+                data: data1
+              },
+              {
+                name: '正确数据',
+                type: 'bar',
+                stack: 'one',
+                itemStyle: itemStyle,
+                data: data2
+              },
+            ]
+          };
+
+          myChart.setOption(option);
         }
-      }
+      },
+      mounted(){
+        this.getWash();
+        this.showCharts();
+      },
+
     }
+
 </script>
 
 <style scoped>
