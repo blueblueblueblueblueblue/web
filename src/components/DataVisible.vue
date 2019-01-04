@@ -1,8 +1,8 @@
 <template>
-    <el-row>
-      <el-col :span="8" class="fd-left">
+    <el-row class="back">
+      <el-col :span="8" class="fd-left" >
         <el-row style="height: 100%">
-          <el-col class="fd-left-one">
+          <el-col class="fd-left-one" @click="showTo1()">
             <div id="left-board1" style="height: 100%;width: 100%;">
 
             </div>
@@ -37,6 +37,9 @@
             optionLeft2:'',
             optionLeft3:'',
             optionBoard:'',
+            data1:[820, 932, 901, 934, 1290, 1330, 1320],
+            data2:[123, 232, 466, 567, 678, 789, 890],
+            xdata:['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
           }
       },
       methods:{
@@ -59,10 +62,13 @@
           var myChart = echarts.init(document.getElementById('Board'));
           var option = this.optionBoard;
           myChart.setOption(option);
+        },
+        showTo1(){
+          this.option = {};
         }
       },
       mounted(){
-        var option = {
+        const optionBoard = {
           title:{
             text:"预测对比图",
             textStyle:{
@@ -72,7 +78,7 @@
           },
           xAxis: {
             type: 'category',
-            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+            data: this.xdata
           },
           yAxis: {
             type: 'value'
@@ -113,29 +119,79 @@
             }
           ],
           toolbox: {
+            show: true,
             feature: {
+              dataZoom: {
+                yAxisIndex: 'none'
+              },
+              dataView: {readOnly: false},
+              magicType: {type: ['line', 'bar']},
+              restore: {},
               saveAsImage: {}
             }
-          }, legend: {
+          },
+          legend: {
             data:['测试数据','预测数据']
           },
           series: [{
             name:'测试数据',
-            data: [820, 932, 901, 934, 1290, 1330, 1320],
+            data: this.data1,
             type: 'line',
             smooth: true
           },
             {
               name:'预测数据',
-              data: [123, 232, 466, 567, 678, 789, 890],
+              data: this.data2,
               type: 'line',
               smooth: true
             }]
         };
-        this.optionBoard = option;
-        this.optionLeft1 = option;
-        this.optionLeft2 = option;
-        this.optionLeft3 = option;
+        const optionLeft1 ={
+          title:{
+            text:"差值图",
+            textStyle:{
+              color:'#333',
+              fontStyle:'oblique'
+            }
+          },
+          xAxis: {
+            type: 'category',
+            data: this.xdata
+          },
+          yAxis: {
+            type: 'value'
+          },
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross'
+            }
+          },
+          toolbox: {
+            show: true,
+            feature: {
+              dataZoom: {
+                yAxisIndex: 'none'
+              },
+              dataView: {readOnly: false},
+              magicType: {type: ['line', 'bar']},
+              restore: {},
+              saveAsImage: {}
+            }
+          },
+          legend: {
+            data:['差值']
+          },
+          series: [{
+            name:'差值',
+            data: this.data1,
+            type: 'line',
+            smooth: true
+          },
+          ]
+        };
+        this.optionLeft1 = optionLeft1;
+        this.optionBoard = optionBoard;
         this.showBoard();
         this.showLeft1();
         this.showLeft2();
@@ -164,5 +220,8 @@
   .fd-left-three{
     border: #2c3e50 1px dashed;
     height: 33%;
+  }
+  .fd{
+    background: url('../assets/bg.jpg');
   }
 </style>
