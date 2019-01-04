@@ -32,7 +32,7 @@
         name: "Datawash",
       data(){
           return{
-            active: 2,
+            active: sessionStorage.getItem("active"),
             search: '',
             errData:[],
             corData:[],

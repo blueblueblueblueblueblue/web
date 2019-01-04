@@ -167,7 +167,8 @@
           this.$ajax.post('/saveFormat',param).then((res) => {
             console.log("resstatus"+res.data.status);
             if (res.data.status) {
-
+              this.active = 2;
+              sessionStorage.setItem("active",2);
             } else {
               this.$message({
                 type: 'error',
