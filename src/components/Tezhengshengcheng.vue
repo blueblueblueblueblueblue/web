@@ -7,7 +7,7 @@
       <!--<el-breadcrumb-item>特征值提取</el-breadcrumb-item>-->
     <!--</el-breadcrumb>-->
   </el-col>
-   <el-col :span="7" >
+   <el-col :span="10">
      <el-table
        highlight-current-row
 
@@ -27,30 +27,39 @@
          label="操作">
          <template slot-scope="scope">
            <el-button
-             type="primary"
+             type=""
              size="mini"
-             :disabled="tableMid.length!=0?true:false"
-             @click="handleAdd(scope.$index, scope.row)">提取></el-button>
+             @click="handleAdd(scope.$index, scope.row)">运算></el-button>
 
          </template>
        </el-table-column>
      </el-table>
 
    </el-col>
-   <el-col :span="10" style="margin-left: 20px;margin-right:20px;overflow: hidden">
+   <el-col :span="3">
+     <br>
+     <br>
+     <el-button type="primary" icon="el-icon-plus" circle @click="plus()"></el-button><br><br>
+     <el-button type="success" icon="el-icon-minus" circle @click="minus()"></el-button><br><br>
+     <el-button type="info" icon="el-icon-close" circle @click="multi()"></el-button><br><br>
+     <el-button type="danger"  circle @click="divid()"> &nbsp;/&nbsp; </el-button>
+
+   </el-col>
+   <el-col :span="10">
      <el-table
        highlight-current-row
 
-       :data="tableMid"
+       :data="tableData2"
        style="width: 100%">
        <el-table-column
-         label="数据表项"
+         label="数据表达式"
          width="180">
          <template slot-scope="scope">
            <i class="el-icon-time"></i>
            <span style="margin-left: 10px">{{ scope.row.data }}</span>
          </template>
        </el-table-column>
+
        <el-table-column
          width="180"
          label="操作">
@@ -58,33 +67,18 @@
            <el-button
 
              size="mini"
+             @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+           <el-button
+
+             size="mini"
              type="danger"
-             @click="handleDel(scope.$index, scope.row)">删除</el-button>
-
+             @click="handleDelete()">删除</el-button>
          </template>
        </el-table-column>
      </el-table>
-     <el-row style="margin-top: 10px;text-align: center">
-       <el-button :disabled="tableMid.length!=0?false:true" @click="commit()" type="warning">提交</el-button>
+     <el-row style="margin-top: 10px">
+       <el-button @click="newExpre()">新建表达式</el-button>
      </el-row>
-   </el-col>
-   <el-col :span="6">
-     <el-table
-       id="updateright"
-       highlight-current-row
-
-       :data="tableData"
-       style="width: 100%">
-       <el-table-column
-         label="数据表达式"
-         width="180">
-         <template slot-scope="scope">
-           <i class="el-icon-time"></i>
-           <span class="updateright" style="margin-left: 10px">{{ scope.row.name }}</span>
-         </template>
-       </el-table-column>
-     </el-table>
-
 
    </el-col>
  </el-row>
@@ -92,51 +86,32 @@
 
 <script>
     export default {
-        name: "tezhengtiqu",
+        name: "tezhengshengcheng",
       data() {
            return{
-             tableMid:[],
              jsondata:"",
              curdata:'',
-             tableData: [],
-             tmp:'',
-             index:''
+             tableData: [{
+               data: '表项1',
+
+             }, {
+               data: '表项2',
+
+             }, {
+               data: '表项3',
+
+             }, {
+               data: '表项4',
+
+             }],
+             tableData2:[{
+               data:'表项1+表项2',
+
+             }]
            }
       },
 
       methods: {
-        commit(){
-            let param = new URLSearchParams();
-            param.append("dataid", sessionStorage.getItem("dataid"));
-            param.append("labelrow",this.index);
-            this.$ajax.post('/getTe', param).then((res) => {
-              console.log("resstatus"+res.data.status);
-              if (res.data.status) {
-                this.$message({
-                  type: 'success',
-                  message: '提交成功',
-                  showClose: true
-                })
-              } else {
-                this.$message({
-                  type: 'error',
-                  message: '用户名或密码错误',
-                  showClose: true
-                })
-              }
-            }).catch((err) => {
-              this.$message({
-                type: 'error',
-                message: '网络错误，请重试',
-                showClose: true
-              })
-            })
-          },
-        handleDel(index, row){
-          this.tableData[this.index] = this.tmp;
-          this.tableMid.pop();
-          document.getElementsByClassName("updateright").click();
-        },
         handleEdit(index, row) {
           //console.log(row.data);
           this.curdata = index;
@@ -145,16 +120,10 @@
 
         },
         handleAdd(index, row) {
-          this.index = index;
-          this.tmp = this.tableData[index];
-          console.log(this.tmp);
-          this.tableData[index] = "";
-          console.log(this.tableData);
           //console.log(row.data);
-          this.tableMid.push({
-            data:row.name,
-          });
-          document.getElementsByClassName("updateright").click();
+          this.tableData2[this.curdata].data += row.name;
+          console.log(row.data);
+
         },
         handleDelete() {
           this.tableData2.pop();

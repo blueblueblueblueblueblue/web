@@ -3,13 +3,19 @@
       <el-col :span="8" class="fd-left">
         <el-row style="height: 100%">
           <el-col class="fd-left-one">
+            <div id="left-board1" style="height: 100%;width: 100%;">
 
+            </div>
           </el-col>
           <el-col class="fd-left-two">
+            <div id="left-board2" style="height: 100%;width: 100%;">
 
+            </div>
           </el-col>
           <el-col class="fd-left-three">
+            <div id="left-board3" style="height: 100%;width: 100%;">
 
+            </div>
           </el-col>
         </el-row>
       </el-col>
@@ -27,15 +33,35 @@
         name: "DataVisible",
       data(){
           return{
-            option:'',
-
+            optionLeft1:'',
+            optionLeft2:'',
+            optionLeft3:'',
+            optionBoard:'',
           }
       },
       methods:{
-
+        showLeft1(){
+          var myChart = echarts.init(document.getElementById('left-board1'));
+          var option = this.optionLeft1;
+          myChart.setOption(option);
+        },
+        showLeft2(){
+          var myChart = echarts.init(document.getElementById('left-board2'));
+          var option = this.optionLeft2;
+          myChart.setOption(option);
+        },
+        showLeft3(){
+          var myChart = echarts.init(document.getElementById('left-board3'));
+          var option = this.optionLeft3;
+          myChart.setOption(option);
+        },
+        showBoard(){
+          var myChart = echarts.init(document.getElementById('Board'));
+          var option = this.optionBoard;
+          myChart.setOption(option);
+        }
       },
       mounted(){
-        var myChart = echarts.init(document.getElementById('Board'));
         var option = {
           title:{
             text:"预测对比图",
@@ -50,6 +76,12 @@
           },
           yAxis: {
             type: 'value'
+          },
+          tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+              type: 'cross'
+            }
           },
           dataZoom: [
             {
@@ -100,8 +132,14 @@
               smooth: true
             }]
         };
-
-        myChart.setOption(option);
+        this.optionBoard = option;
+        this.optionLeft1 = option;
+        this.optionLeft2 = option;
+        this.optionLeft3 = option;
+        this.showBoard();
+        this.showLeft1();
+        this.showLeft2();
+        this.showLeft3();
       }
     }
 </script>

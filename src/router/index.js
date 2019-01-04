@@ -10,6 +10,7 @@ import Syslog from '@/components/plugin/Syslog'
 import Sysmanager from '@/components/plugin/Sysmanager'
 import Datawash from '@/components/Datawash'
 import Tezhengtiqu from '@/components/Tezhengtiqu'
+import Tezhengshengcheng from '@/components/Tezhengshengcheng'
 import Dataformat from '@/components/Dataformat'
 import column from '@/components/column/column'
 import funnel from '@/components/funnel/funnel'
@@ -97,6 +98,7 @@ let router = new Router({
           children: [
             {path: '/plugin/xitongguanli', component: Sysmanager, name: '系统管理', menuShow: true},
             {path: '/plugin/xitongrizhi', component: Syslog, name: '系统日志', menuShow: true},
+            {path: '/plugin/shengcheng', component: Tezhengshengcheng, name: '特征生成', menuShow: true},
             {path: '/plugin/moxingpeizhi', component: Modelconfig, name: '模型配置', menuShow: true},
             {path: '/plugin/moxingguanli', component: Modelmanager, name: '模型管理', menuShow: true},
             {path: '/plugin/tezheng', component: Tezhengtiqu, name: '特征提取', menuShow: true},
