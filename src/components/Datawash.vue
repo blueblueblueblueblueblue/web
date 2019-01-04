@@ -7,13 +7,20 @@
           <el-breadcrumb-item :to="{ path: '/' }"><b>首页</b></el-breadcrumb-item>
 
           <el-breadcrumb-item>数据清洗</el-breadcrumb-item>
+          <el-steps :active="active" finish-status="success">
+            <el-step title="选择数据" icon="el-icon-upload"></el-step>
+            <el-step title="格式化配置" icon="el-icon-edit"></el-step>
+            <el-step title="数据清洗" icon="el-icon-edit-outline"></el-step>
+            <el-step title="新建插件" icon="el-icon-setting"></el-step>
+          </el-steps>
         </el-breadcrumb>
       </el-col>
     </el-row>
     <el-row>
       <el-col :span="18" id="main" style="height:500px"></el-col>
       <el-col :span="6" >
-        <el-button type="primary">处理</el-button>
+        <el-button type="primary" @click="getWash">数据格式化</el-button>
+        <el-button type="success">处理</el-button>
       </el-col>
     </el-row>
   </el-row>
@@ -25,6 +32,7 @@
         name: "Datawash",
       data(){
           return{
+            active: 2,
             search: '',
             errData:[],
             corData:[],
@@ -45,6 +53,7 @@
             this.corData.push((Math.random() + 0.3).toFixed(2));
 
           }
+          this.showCharts();
         },
         showCharts(){
           var myChart = echarts.init(document.getElementById('main'));
@@ -143,7 +152,7 @@
         }
       },
       mounted(){
-        this.getWash();
+        //this.getWash();
         this.showCharts();
       },
 

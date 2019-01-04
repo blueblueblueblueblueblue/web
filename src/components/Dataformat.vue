@@ -5,6 +5,12 @@
         <el-breadcrumb-item :to="{ path: '/' }"><b>首页</b></el-breadcrumb-item>
 
         <el-breadcrumb-item>数据格式化</el-breadcrumb-item>
+        <el-steps :active="active" finish-status="success">
+          <el-step title="选择数据" icon="el-icon-upload"></el-step>
+          <el-step title="格式化配置" icon="el-icon-edit"></el-step>
+          <el-step title="数据清洗" icon="el-icon-edit-outline"></el-step>
+          <el-step title="新建插件" icon="el-icon-setting"></el-step>
+        </el-steps>
       </el-breadcrumb>
     </el-col>
     <el-col :span="24" style="margin-left: 20px">
@@ -47,6 +53,7 @@
         name: "Dataformat",
       data() {
         return {
+          active:sessionStorage.getItem("active"),
           data5: [],
           headNum:"",
           dataformat:[],

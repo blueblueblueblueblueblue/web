@@ -46,7 +46,7 @@
               <i :class="item.iconCls"></i><span slot="title">{{item.children[0].name}}</span>
             </el-menu-item>
           </template>
-          <el-menu-item v-for="(item,index) in pluginList" :index="index" :key="item.id" @click="chosePlugin(item)" >
+          <el-menu-item class="" v-for="(item,index) in pluginList" :index="index" :key="item.id" @click="chosePlugin(item)" >
             <i class="el-icon-setting"></i><span >{{item.pluginName}}</span>
           </el-menu-item>
           <el-menu-item  @click="addMenuItem">

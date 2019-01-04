@@ -5,16 +5,23 @@
        <el-breadcrumb-item :to="{ path: '/' }"><b>首页</b></el-breadcrumb-item>
 
        <el-breadcrumb-item>数据池</el-breadcrumb-item>
+       <el-steps :active="active" finish-status="success">
+         <el-step title="选择数据" icon="el-icon-upload"></el-step>
+         <el-step title="格式化配置" icon="el-icon-edit"></el-step>
+         <el-step title="数据清洗" icon="el-icon-edit-outline"></el-step>
+         <el-step title="新建插件" icon="el-icon-setting"></el-step>
+       </el-steps>
      </el-breadcrumb>
+
    </el-col>
 
    <el-col :span="24" class="datapool">
      <el-row>
-       <el-col :span="3" v-for="(item, index) in datalist" :key="item.id" style="margin: 20px" >
-         <el-card :body-style="{ padding: '0px', }" :style=" choseIndex==index?'border: #00C1DE 2px solid':'border: #ffffff 2px solid'">
+       <el-col :span="3" v-for="(item, index) in datalist" :key="item.id" style="margin: 20px;" >
+         <el-card :body-style="{ padding: '0px', }" style="height: 180px" :style=" choseIndex==index?'border: #00C1DE 2px solid':'border: #ffffff 2px solid'">
            <img src="../assets/images/data.png" class="image" @click="chose(index)">
            <div style="padding: 10px;cursor: pointer" @click="chose(index)">
-             <div class="bottom clearfix">
+             <div class="bottom clearfix" style="">
                <span>{{item.nameByUser}}</span>
 
              </div>
@@ -47,6 +54,7 @@
       name: "Datapool",
       data () {
         return {
+          active:0,
           choseIndex:-1,
           datalist:"",
           currentDate: new Date(),
@@ -75,6 +83,8 @@
         chose(index){
           this.choseIndex = index;
           sessionStorage.setItem("dataid",this.datalist[index].id);
+          sessionStorage.setItem("active",1);
+          this.active = 1;
         },
         dataList(){
           this.$ajax.post('/dataList').then((res) => {
